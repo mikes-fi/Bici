@@ -1,8 +1,11 @@
 package com.ejemplo.holausuario;
 
 import android.os.Bundle;
+import android.app.AlertDialog;
+//import android.app.Dialog;
+import android.content.DialogInterface;
 //import android.app.Activity;
-import android.content.Intent;
+//import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -19,11 +22,19 @@ import android.widget.Toast;
 
 public class MainActivity extends android.support.v4.app.FragmentActivity implements AdapterView.OnItemClickListener {
 
-	private DrawerLayout mDrawer;
+	DrawerLayout mDrawer;
 	private ListView navList;
 	String[] names;
 	Resources res;
 	TabHost tabs;
+	
+	final CharSequence[] itemsUnidadesMetricas = {"Kilometros", "Millas", "Yardas"};
+	final CharSequence[] itemsIdioma = {"Inglés", "Español", "Frances"};
+	AlertDialog.Builder builder;
+	Toast toast;
+	AlertDialog alert;
+	int valorItemIdioma=1;
+	int valorItemUnidadesMetricas=0;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +72,7 @@ public class MainActivity extends android.support.v4.app.FragmentActivity implem
         //**********************************************************vista
         
         this.navList = (ListView) findViewById(R.id.left_drawer);
-        this.mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         // Load an array of options names
         names= getResources().getStringArray(
@@ -106,31 +117,46 @@ public class MainActivity extends android.support.v4.app.FragmentActivity implem
     }
 
 
-    @Override
+	@Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 	    //Toast.makeText(this, "Pulsado " + names[i], Toast.LENGTH_SHORT).show();
 	    //mDrawer.closeDrawers();
 	    switch(i){
 	    	//unidades metricas
 	    	case 1:
-	    		//Creamos el Intent pasando la actividad llamadora y la actividad a llamar
-                Intent intent = new Intent(MainActivity.this, FrmSaludo.class);
-                
-                //Creamos la información a pasar entre actividades
-                Bundle b = new Bundle();
-                b.putString("NOMBRE", "Hi");
-
-                //Añadimos la información al intent
-                intent.putExtras(b);
-                
-                //Iniciamos la nueva actividad
-                startActivity(intent);
+	    		builder = new AlertDialog.Builder(this);
+	    		builder.setTitle("¿Unidades Metricas preferidas?");
+	    		builder.setSingleChoiceItems(itemsUnidadesMetricas, valorItemUnidadesMetricas, new DialogInterface.OnClickListener() {
+	    		    public void onClick(DialogInterface dialog, int item) {
+	    		        toast = Toast.makeText(getApplicationContext(), "Haz elegido la opcion: " + itemsUnidadesMetricas[item] , Toast.LENGTH_SHORT);
+	    		        toast.show();
+	    		        valorItemUnidadesMetricas=item;
+	    		        dialog.cancel();
+	    		    }
+	    		});
+	    		alert = builder.create();
+	    		alert.show();
+	    	break;
+	    	
+	    	case 2:
+	    		builder = new AlertDialog.Builder(this);
+	    		builder.setTitle("¿Idioma preferido?");
+	    		builder.setSingleChoiceItems(itemsIdioma, valorItemIdioma, new DialogInterface.OnClickListener() {
+	    		    public void onClick(DialogInterface dialog, int item) {
+	    		        Toast toast = Toast.makeText(getApplicationContext(), "Haz elegido la opcion: " + itemsIdioma[item] , Toast.LENGTH_SHORT);
+	    		        toast.show();
+	    		        valorItemIdioma=item;
+	    		        //para cerrar el dialogo al dar click
+	    		        dialog.cancel();
+	    		    }
+	    		});
+	    		alert = builder.create();
+	    		alert.show();
 	    	break;
 	    }
 	    
     }
-    
-    
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
